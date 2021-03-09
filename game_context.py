@@ -30,10 +30,6 @@ class GameContext(object):
         # dump and restore
         self.from_context_restore = False
 
-    def get_preclk_example_path(self):
-        name = 'preclk_example_loop_%04d.example.txt' % self.loop_count
-        return os.path.join(self.hyper_param.k_example_path, name)
-
     def is_dup(self, uid, tid):
         key = '%s_%s' % (uid, tid)
         if key in self.dedup_set:

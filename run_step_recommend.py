@@ -24,7 +24,18 @@ class RunStepRecommend(RunStep):
             impression_item_list = ranked_item_list[:n]
             # User Action
             self.user_action_to_emit_example(user, impression_item_list)
-        return context
+        # stat ctr
+        q = self.game_engine.example_manager.preclk_example_message_queue
+        pos, neg = 0, 0
+        for d in q:
+            if d['label'] > 0:
+                pos += 1
+            else:
+                neg += 1
+        ctr_stat = pos / (pos+neg)
+        context.info("ctr=%s, example_count=%s" % (ctr_stat, pos+neg), self)
+        # dump example 
+        self.game_engine.example_manager.dump_example_in_queue(self.context.loop_count)
     
     def retrieve(self, user):
         # todo, use double tower ann to retrieve
@@ -41,6 +52,7 @@ class RunStepRecommend(RunStep):
     def user_action_to_emit_example(self, user, impression_item_list):
         game_engine = self.game_engine
         for item in impression_item_list:
+            self.context.dedup_set.add('%s_%s' % (user.uid, item.tid))
             click = self.judge_click(user, item)
             label = 0.
             if click:
@@ -52,8 +64,7 @@ class RunStepRecommend(RunStep):
                 m_user="%s_%.2f%%" % (user, 100.*user.prior_ctr),
                 m_item=str(item),
             )
-            game_engine.example_data_message_queue.append(example_data)
-            
+            game_engine.example_manager.emit_preclk_example(example_data)
 
 
     def get_ab_version(self, user):

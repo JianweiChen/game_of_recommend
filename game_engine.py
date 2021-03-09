@@ -20,6 +20,9 @@ from hyper_param import HyperParam
 from game_context import GameContext
 from fm_model import FmModel
 from deep_fm_model import DeepFmModel
+from example_manager import ExampleManager
+
+import tensorflow as tf
 
 class GameEngine(object):
     def __init__(self, hyper_param, loop_count=100):
@@ -39,25 +42,20 @@ class GameEngine(object):
         self.init_or_restore_context()
         self.init_or_restore_model()
         self.context.hyper_param = hyper_param
-        self.init_or_clear_example_path()
-
-        self.example_data_message_queue = []
-
+        self.example_manager = ExampleManager(self.hyper_param)
+        self.example_manager.init_example_dir_condition(self.context.loop_count)
     
-    def init_or_clear_example_path(self):
-        example_path = self.hyper_param.k_example_path
-        if not os.path.exists(example_path):
-            os.mkdir(example_path)
-        if self.context.loop_count <= 1: # restore from dumped context
-            for name in os.listdir(example_path):
-                if name.endswith('.example.txt'):
-                    os.remove(os.path.join(example_path, name))
-    
+
     def init_or_restore_model(self):
         if True:
+            base_fm = FmModel()
+            base_fm.compile(
+                optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+                loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+                metrics=[tf.keras.metrics.AUC()]
+            )
             self.model_map = dict(
-                base_fm=FmModel(),
-                deep_base_fm=DeepFmModel()
+                base_fm=base_fm,
             )
 
     def init_log(self):
@@ -86,4 +84,4 @@ class GameEngine(object):
         logging.info("game engine shut down for reaching the maximum number of loop")
 
 if __name__ == '__main__':
-    pass
+    game_engine = GameEngine(HyperParam())
