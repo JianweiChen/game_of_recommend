@@ -2,7 +2,7 @@
 import logging
 from run_step import RunStep
 
-class RunStepTrain(RunStep):
+class RunStepBuildAnn(RunStep):
 
     def __init__(self, game_engine):
         super().__init__(game_engine)

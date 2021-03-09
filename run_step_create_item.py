@@ -5,10 +5,11 @@ from item import Item
 
 class RunStepCreateItem(RunStep):
     
-    def __init__(self, hyper_param):
-        super().__init__(hyper_param)
+    def __init__(self, game_engine):
+        super().__init__(game_engine)
     
-    def real_run(self, context):
+    def real_run(self):
+        context = self.context
         p = self.hyper_param.k_item_word_rank_p
         k = int(len(context.rank_word_list) * p)
         word_list_to_create_item = list(

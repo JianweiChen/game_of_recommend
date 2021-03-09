@@ -13,10 +13,11 @@ class BuildCorpusError(Exception):
 
 class RunStepBuildCorpus(RunStep):
     
-    def __init__(self, hyper_param):
-        super().__init__(hyper_param)
+    def __init__(self, game_engine):
+        super().__init__(game_engine)
     
-    def real_run(self, context):
+    def real_run(self):
+        context = self.context
         c1 = self.hyper_param.k_paragraph_word_count
         c2 = self.hyper_param.k_new_paragraph_count_per_loop
         c3 = self.hyper_param.k_paragraph_pool_size
@@ -87,9 +88,11 @@ class RunStepBuildCorpus(RunStep):
     def _format_string(self, s):
         s = s.lower()
         s = re.sub(r'</?\w+[^>]*>', ' ', s)
-        s = re.sub('[%s]' % re.escape(string.digits), '', s)
-        s = re.sub('[%s]' % re.escape(string.punctuation), ' ', s)
+        s = re.sub('[^%s]' % re.escape(string.ascii_lowercase), ' ', s)
+        # s = re.sub('[%s]' % re.escape(string.digits), '', s)
+        # s = re.sub('[%s]' % re.escape(string.punctuation), ' ', s)
         s = re.sub('[%s]+' % re.escape(string.whitespace), ' ', s)
+        s = s.strip()
         return s
 
 
@@ -97,5 +100,5 @@ class RunStepBuildCorpus(RunStep):
         
 if __name__ == '__main__':
     rs = RunStepBuildCorpus(hyper_param=HyperParam())
-    # s = rs._format_string("a ,10big <p> </p>girl")
-    # print(s)
+    s = rs._format_string("我•ª˙ªøa ,10big <p> </p>girl")
+    print(s)

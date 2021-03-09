@@ -4,18 +4,31 @@ import sys
 import random
 import logging
 class RunStep(object):
-    def __init__(self, hyper_param):
+    def __init__(self, game_engine):
         super().__init__()
-        self.hyper_param = hyper_param
+        self.game_engine = game_engine
 
-    def run(self, context):
-        logging.info("run loop=%s %s" % (context.loop_count, self.__class__))
-        return self.real_run(context)
+    @property
+    def context(self):
+        return self.game_engine.context
     
-    def real_run(self, context):
+    @property
+    def hyper_param(self):
+        return self.game_engine.hyper_param
+    
+    @property
+    def model_map(self):
+        return self.game_engine.model_map
+
+    def run(self):
+        # logging.info("run loop=%s %s" % (context.loop_count, self.__class__))
+        return self.real_run()
+    #todo remove input param: context
+    def real_run(self):
         raise NotImplementedError
     
-    def judge_click(self, context, user, item):
+    def judge_click(self, user, item):
+        context = self.context
         if item.word_t in (user.word_a, user.word_b):
             return False
         m = context.word_paragraph_position_map
