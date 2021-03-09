@@ -40,7 +40,7 @@ class HyperParam(object):
         self.k_ab_distance_sample_prob = 1.
 
         # how many items can be input of deep-fm rank module
-        self.k_rank_input_item_count = 300
+        self.k_rank_input_item_count = 3000
 
         self.k_impression_count_per_req = 5
 

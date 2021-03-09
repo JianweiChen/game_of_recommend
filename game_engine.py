@@ -45,6 +45,12 @@ class GameEngine(object):
         self.example_manager = ExampleManager(self.hyper_param)
         self.example_manager.init_example_dir_condition(self.context.loop_count)
     
+    def get_ab_version(self, user):
+        uid = user.uid
+        if (uid//23) % 2 == 0:
+            return 'A'
+        else:
+            return 'B'
 
     def init_or_restore_model(self):
         if True:
