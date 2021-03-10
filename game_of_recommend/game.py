@@ -37,7 +37,7 @@ class Game(object):
         self.size_item_pool = 5_000
         self.size_paragraph_pool = 5_000
         self.size_new_item = 20
-        self.size_new_user = 200
+        self.size_new_user = 20000
         self.size_new_paragraph = 20
         self.count_word_per_paragraph = 300
 
@@ -51,8 +51,13 @@ class Game(object):
         # Hyper-parameters used to Determining the user's click 
         # and pay behavior based on the position of the word
         ############
-        self.bias_distance_click = 3
-        self.bias_distance_pay = 2
+        self.prob_dislike_click = 0.01
+        self.rate_solicit_browse = 0.01
+        self.bias_distance_click = 30
+        self.bias_distance_pay = 300
+        self.rate_paragraph_ctr_search = 1.
+        self.rate_paragraph_pay_search = 1.
+        self.scale_pay = 10_000
 
         ############
         # Hyper-params for recommendation
@@ -103,7 +108,7 @@ class Game(object):
             StepItem(self),
             # Use two more frequent words to generate a user (to be solicited here), the user will quickly 
             # browse a part of the item and decide whether the solicitation is successful
-            StepUser(self),
+            StepUser(self, need_summary=True),
             # Recommend,including dedup, retrieval, rank model for CTR and PAY
             StepRecommend(self),
             # The user consumes the recommended results and generates training samples called `Example`

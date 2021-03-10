@@ -13,8 +13,8 @@ from step import Step
 
 class StepRecommend(Step):
 
-    def __init__(self, game):
-        super().__init__(game)
+    def __init__(self, game, need_summary=False):
+        super().__init__(game, need_summary)
     
     # Divided into four experimental groups, 
     #   A: all random, 
@@ -24,10 +24,12 @@ class StepRecommend(Step):
     def real_run(self):
         ctx = self.context
         for uid, user in ctx.map_user.items():
-            user.list_tid_impression = []
+            list_tid_rsp = self.sort(user)
+            user.list_tid_recommend = []
             for tid in list_tid_rsp:
-                user.list_tid_impression.append(tid)
-    
+                user.list_tid_recommend.append(tid)
+
+    # The `SORT` interface is the outermost interface of the recommendation system
     def sort(self, user):
         list_tid_rsp = []
 

@@ -14,8 +14,8 @@ from step import Step
 
 class StepCorpus(Step):
 
-    def __init__(self, game):
-        super().__init__(game)
+    def __init__(self, game, need_summary=False):
+        super().__init__(game, need_summary)
         # Load the pathnames of all available corpus in advance, and then 
         # parse the content of the article as needed
         self.list_corpus_path = []
@@ -37,8 +37,8 @@ class StepCorpus(Step):
     # operation of a pipeline
     def remove_paragraph(self):
         m = self.context.map_word_paragraph
-        list_word_empty = []
         while self.paragraph_pool_need_eliminate:
+            list_word_empty = []
             paragraph_id = self.context.list_paragraph_id.pop(0)
             for word in m:
                 if paragraph_id in m[word]:
@@ -46,8 +46,7 @@ class StepCorpus(Step):
                 if len(m[word]) == 0:
                     list_word_empty.append(word)
             for word in list_word_empty:
-                if word in m:
-                    m.pop(word)
+                m.pop(word)
 
     # Generate a batch of new paragraphs, which symbolizes the slow environmental 
     # changes in the recommendation system. If size_new_paragraph is too large relative 
@@ -80,7 +79,7 @@ class StepCorpus(Step):
         if len(self.context.list_paragraph_id) == 0:
             return 1
         else:
-            return self.context.list_paragraph_id[-1]
+            return self.context.list_paragraph_id[-1] + 1
 
     # Fill `list_buffer_word` for subsequent batch generation of paragraphs
     def fill_list_buffer_word(self, word_count_need):

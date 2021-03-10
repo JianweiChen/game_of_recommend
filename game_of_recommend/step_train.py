@@ -13,8 +13,8 @@ from step import Step
 
 class StepTrain(Step):
 
-    def __init__(self, game):
-        super().__init__(game)
+    def __init__(self, game, need_summary=False):
+        super().__init__(game, need_summary)
     
     def real_run(self):
         pass

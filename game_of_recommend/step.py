@@ -4,12 +4,14 @@ from base import Base
 
 class Step(Base):
 
-    def __init__(self, game):
+    def __init__(self, game, need_summary=False):
         super().__init__(game)
+        self.need_summary = need_summary
 
     def run(self):
         self.real_run()
-        self.context.summary(self)
+        if self.need_summary:
+            self.context.summary(self)
     
     def real_run(self):
         raise NotImplementedError
