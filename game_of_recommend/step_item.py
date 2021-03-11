@@ -57,6 +57,7 @@ class StepItem(Step):
             if item.tid not in ctx.map_item:
                 ctx.map_item[item.tid] = item
     
+    # Because new items are added to the pool, some old items need to be eliminated randomly
     def eliminate_item(self):
         ctx = self.context
         count_eliminate = max(0, len(ctx.map_item) - self.game.size_item_pool)

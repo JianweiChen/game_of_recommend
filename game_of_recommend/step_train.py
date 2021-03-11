@@ -17,4 +17,5 @@ class StepTrain(Step):
         super().__init__(game, need_summary)
     
     def real_run(self):
-        pass
+        model_manager = self.game.model_manager
+        model_manager.train()

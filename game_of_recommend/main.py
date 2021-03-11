@@ -2,5 +2,5 @@
 
 from game import Game
 
-game = Game(20)
+game = Game(200)
 game.run()

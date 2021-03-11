@@ -89,6 +89,7 @@ class StepCorpus(Step):
     # Divide an article, article and paragraph are completely different concepts
     def fill_list_buffer_word_one_corpus(self):
         path = self.list_corpus_path.pop(0)
+        self.context.map_corpus[path] = True
         with open(path, 'r') as f:
             text = '\n'.join(list(f))
             list_word = self.text_to_list_word(text)

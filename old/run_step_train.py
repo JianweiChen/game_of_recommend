@@ -10,7 +10,7 @@ class RunStepTrain(RunStep):
     def real_run(self):
         ds = self.game_engine.example_manager.example_to_dataset(self.context.loop_count)
         history = self.game_engine.model_map['base_fm'].fit(ds, epochs=1)
-        elf.game_engine.model_map['base_fm'].evaluate(ds)
+        self.game_engine.model_map['base_fm'].evaluate(ds)
         auc = history.history['auc']
         loss = history.history['loss']
         self.context.info("loss=%s auc=%s" % (loss, auc), self)

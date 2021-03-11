@@ -35,11 +35,30 @@ class StepUser(Step):
     # first round of operation. Each round is recruited with a fixed quota, and there is no 
     # specific limit on how much can be left.
     def real_run(self):
-        for _ in range(self.game.size_new_user):
+        if not len(self.context.map_user):
+            self.load_user_pkl()
+        max_solicit_success = max(self.game.size_new_user, self.game.size_user_pool - len(self.context.map_user))
+        solicit_success = 0
+        for _ in range(self.game.size_solicit_attemp):
             user_or_none = self.solicit()
             if user_or_none:
                 user = user_or_none
                 self.context.map_user[user.uid] = user
+                solicit_success += 1
+                if solicit_success >= max_solicit_success:
+                    break
+        self.context.map_summary['solicit_success'] = solicit_success   
+        self.eliminate_user()
+        self.dump_user_pkl()
+    
+    def load_user_pkl(self):
+        if os.path.exists(self.game.path_user_pkl):
+            with open(self.game.path_user_pkl, 'rb') as f:
+                self.context.map_user = pickle.load(f)
+    
+    def dump_user_pkl(self):
+        with open(self.game.path_user_pkl, 'wb') as fw:
+            pickle.dump(self.context.map_user, fw)
 
     # If the solicitation is successful, return the user, otherwise return None
     def solicit(self):
@@ -68,3 +87,10 @@ class StepUser(Step):
         assert len(list_word) > 0
         two_word = random.sample(list_word, 2)
         return two_word[0], two_word[1]
+    
+    def eliminate_user(self):
+        k = max(0, len(self.context.map_user) - self.game.size_user_pool)
+        list_uid = list(self.context.map_user.keys())
+        list_eliminate_uid = random.sample(list_uid, k)
+        for uid in list_eliminate_uid:
+            self.context.map_user.pop(uid)

@@ -15,6 +15,8 @@ class Context(object):
         self.list_buffer_word = []
         self.list_rank_word = []
 
+        self.map_summary = dict()
+
     def summary(self, caller):
         list_message = []
         for k, v in self.__dict__.items():
@@ -26,6 +28,10 @@ class Context(object):
                 list_message.append(
                     "%s=%s" % (k, v)
                 )
+        for k, v in self.map_summary.items():
+            list_message.append(
+                "%s=%s" % (k, v)
+            )
         list_message.append("caller=%s" % caller.__class__)
         message = ' '.join(list_message)
         logging.info(message)
