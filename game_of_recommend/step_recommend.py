@@ -31,14 +31,27 @@ class StepRecommend(Step):
 
     # The `SORT` interface is the outermost interface of the recommendation system
     def sort(self, user):
+        game = self.game
+        context = self.context
         ab_version = self.game.example_manager.get_user_ab_version(user)
         list_tid_rsp = []
-        # todo
-        if ab_version == 'X':
-            pass
+        if ab_version in ('A', 'B'):
+            list_tid_rsp = self.retrieve_random(user)
+            list_tid_score = self.game.model_manager.predict_click(user.uid, list_tid_rsp)
+            list_tid_score = sorted(list_tid_score, key=lambda x: x[1], reverse=True)
+            k = min(game.count_item_per_recommend, len(list_tid_score))
+            list_tid_score_rsp = list_tid_score[:k]
+            list_tid_rsp = [x[0] for x in list_tid_score_rsp]
         else:
             list_tid_rsp = self.sort_random(user)
         return list_tid_rsp
+
+    # Random recall results
+    def retrieve_random(self, user):
+        game = self.game
+        list_tid = self.dedup_to_list_id(user)
+        k = min(game.count_input_fine_rank, len(list_tid))
+        return random.sample(list_tid, k)
 
     # Random recommendation, but including dedup strategy, as a baseline
     def sort_random(self, user):

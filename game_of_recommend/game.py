@@ -33,7 +33,7 @@ class Game(object):
         ############
         # Hyper-parameter: The pool size and update intensity of corpus, user, and item
         ############
-        self.size_user_pool = 20_000
+        self.size_user_pool = 2_000
         self.size_item_pool = 5_000
         self.size_paragraph_pool = 5_000
         self.size_new_item = 20

@@ -22,6 +22,7 @@ class StepExample(Step):
         for uid, user in self.context.map_user.items():
             for tid in user.list_tid_recommend:
                 item = self.context.map_item[tid]
+                user.map_impression[item.tid] = True
                 # judge click and emit click example
                 click = judge.judge_click(user, item)
                 self.emit_example(user, item, example_type='click', example_label=1. if click else 0.)
@@ -29,11 +30,6 @@ class StepExample(Step):
                     # if user clicks, judge pay value and emit pay example
                     pay = judge.judge_pay(user, item)
                     self.emit_example(user, item, example_type='pay', example_label=pay)
-                # if click:
-                #     pos +=1
-                # else:
-                #     neg += 1
-                # print(user, item, click, pay)
         # print("ctr=%s" % (pos/(pos+neg)))
         self.game.example_manager.dump()
 

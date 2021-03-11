@@ -95,6 +95,26 @@ class ModelManager(Base):
     def train_retrieval_model(self):
         pass
 
+    def predict_click(self, uid, list_tid):
+        model = self.model_click
+        return self._predict(model, uid, list_tid)
+    
+    def _predict(self, model, uid, list_tid, batch_size=32):
+        feature_input = dict(
+            f_uid=[],
+            f_tid=[]
+        )
+        for tid in list_tid:
+            feature_input['f_uid'].append(str(uid))
+            feature_input['f_tid'].append(str(tid))
+        ds = tf.data.Dataset.from_tensor_slices(feature_input)
+        ds = ds.batch(batch_size)
+        list_predict_array = model.predict(ds)
+        list_predict_score = [x[0] for x in list_predict_array]
+        list_tid_score = list(zip(list_tid, list_predict_score))
+        return list_tid_score
+        
+
     def example_to_dataset(self, list_example_data, batch_size=32, shuffle=True):
         labels = []
         feature_input = dict(
