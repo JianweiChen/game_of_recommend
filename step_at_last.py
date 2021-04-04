@@ -11,6 +11,7 @@ import time
 
 from step import Step
 
+# Statistics various indicators for a AB-group of users
 class AbVersionStat(object):
 
     def __init__(self):
@@ -42,6 +43,22 @@ class StepAtLast(Step):
     
     def real_run(self):
         self.stat_example()
+        self.display_condition()
+
+    def display_condition(self):
+        map_summary = self.context.map_summary
+        # list_message.append("Loop %s" % self.context.loop)
+        # list_message.append("A_ctr\t%.3f\tB_ctr\t%.3f" % (
+        #     map_summary['A_ctr'], map_summary['B_ctr']
+        # ))
+        # list_message.append("C_ctr\t%.3f\tD_ctr\t%.3f" % (
+        #     map_summary['C_ctr'], map_summary['D_ctr']
+        # ))
+        list_message = [
+            "loop=%s\tLoss=%.3f\t%.3f" % (self.context.loop, map_summary['loss'], map_summary['auc']),
+        ]
+        list_message.append()
+        print("\n".join(list_message))
 
     def stat_example(self):
         summary = self.context.map_summary
@@ -64,7 +81,6 @@ class StepAtLast(Step):
             label = example_data['label']
             ab_stat = map_ab[ab_version]
             ab_stat.pay += label
-        # todo
         for ab_version, ab_stat in map_ab.items():
             summary['%s_ctr' % ab_version] = ab_stat.ctr
             summary['%s_preclk' % ab_version] = ab_stat.len_preclk

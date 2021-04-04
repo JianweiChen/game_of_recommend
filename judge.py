@@ -74,6 +74,8 @@ class JudgeManager(Base):
         pay = 0
         for r in list_min_ta_or_tb_distance:
             pay += max(0, self.game.bias_distance_pay - r)
+        # todo: Use the number of common paragraphs as the denominator 
+        # to avoid homogeneity with click behavior
         pay = self.game.scale_pay * pay / (1 + len(ctx.list_paragraph_id))
         # pay = int(pay)
         return pay

@@ -1,10 +1,18 @@
 # game_of_recommend
-this is a game of recommend, user, item and `interest` are generated from text corpus. we use this to demonstrate how recommend system machine learning model works
 
-we recommend word, just like sug, and we use two word to represent a user.
+该项目试图仿真真实推荐系统的运作过程。这样做的主要目的就是提供一个可以反复产生数据并且能够真实测试模型效果的小系统。如果没有真实测试的接口，那么推荐模型在线下的auc提升意义并不是很大。实际工作环境中，离线涨指标，上线无收益是一个很普遍的现象。
 
-the key aim of this project is to write a guide for recommend problem using tensorflow. NOT FORGET.
-
-the first word of two user words will be a observed feature for recommend system, just like a generalized feature.
-
-a AB test will be used for at most two recommend strategy
+- 程序的入口在`main.py`；
+- 用一个词仿真一个被推荐对象（item），详见`step_item.py`；
+- 用两个词仿真一个用户（user），详见`step_user.py`；
+- 点击行为仿真：在某些段落中，item词是否曾出现在两个user词中间，如果出现的话，这两个user词的间距越小，则用户点击的概率越大（引入不确定性），具体参看`judge.py`；
+- 除点击外，还仿真了一个转化行为pay，是一个有value的目标值（需要回归），它的仿真原理同样是item词是否在某些段落中出现在两个user词出现过，但不同于click的结算方式，item词与任一个user词的间距越小则pay值会越高。具体逻辑也参见`judge.py`；
+- 以上的click和pay的判断依赖建立基于语料的词索引，并且在每一轮会淘汰一小部分语料，并引入一部分新语料，以此来仿真真实世界中的热点迁移。这一部分工作实现在`step_corpus.py`中；
+- 仿真的过程分为若干轮，每一轮会做如下工作：引入并淘汰一部分仿真语料，引入并淘汰一小部分新用户，引入并淘汰一小部分的item，所有用户会请求推荐系统，推荐系统会返回一些item，之后用户基于`judge.py`中的click和pay逻辑做出选择（这其中有很大的随机性，但也有规律性），这些用户的行为会dump成example，关于example的逻辑请参见`example.py`，之后会基于example训练精排模型、召回模型和pay转化模型（目前只有点击精排模型实现了，其他两个todo）；
+- 消重策略是在n轮内不会重复推荐（也可以认为推了用户也不会click或pay），如果n过大的话，整个系统有item耗尽的风险；
+- 每一轮都训练并在下一轮使用模型推荐的过程是在仿真生产环境中的online training；
+- 召回模型目前暂未实现（目前是随机召回，然后用点击模型来排序），如果实现的话，会在`step_ann.py`中构建ann索引；
+- 如果不用精排模型，点击率在2%左右，用了精排模型会上升到12%，这一数据是基于简单的AB实验实现的，具体的生效与统计逻辑课分别参见`step_recommend.py`和`step_at_last.py`中；
+- 同生产环境中的真实推荐系统模型一样，这里的模型也没有测试集，而是每个batch的样本只训练一次，这相当于训练集本身产出的auc就是验证集的auc；
+- auc刚开始在50%，后来可以逐步上升到70%，接了精排的B组比A组的auc会高很多；
+- 在目前这个系统里，每一轮训练在第一个epoch跑完拿到auc之后，必须得再跑几次，否则会不收敛；

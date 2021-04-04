@@ -82,12 +82,12 @@ class ModelManager(Base):
     def train_click_model(self):
         list_example_click = self.game.example_manager.load_example_click(self.context.loop)
         ds = self.example_to_dataset(list_example_click, batch_size=self.game.model_click_batch_size)
-        history=self.model_click.fit(ds, epochs=1)
-        print(history.history)
+        history=self.model_click.fit(ds, epochs=1, verbose=0)
+        # print(history.history)
         self.context.map_summary['loss_click'] = history.history['loss']
         self.context.map_summary['auc_click'] = history.history['auc']
         if self.game.model_click_extra_train_epochs:
-            self.model_click.fit(ds, epochs=self.game.model_click_extra_train_epochs)
+            self.model_click.fit(ds, epochs=self.game.model_click_extra_train_epochs, verbose=0)
 
     def train_pay_model(self):
         pass
